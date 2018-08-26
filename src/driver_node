@@ -1,0 +1,39 @@
+#!/usr/bin/env python
+
+import rospy
+from std_msgs.msg import String
+
+#start board using https://github.com/simonmonk/raspirobotboard3
+from rrb3 import *
+rr = RRB3(9, 6)
+
+# Message handler
+def CommandCallback(commandMessage):
+    command = commandMessage.data
+    if command == 'forwards':
+        print('Moving forwards')
+        rr.forward()
+    elif command == 'backwards':
+        print('Moving backwards')
+        rr.reverse()
+    elif command == 'left':
+        print('Turning left')
+        rr.left()
+    elif command == 'right':
+        print('Turning right')
+        rr.right()
+    elif command == 'stop':
+        print('Stopping')
+        rr.stop()
+    else:
+        print('Unknown command, stopping instead')
+        rr.stop()
+
+rospy.init_node('driver')
+
+rospy.Subscriber('command', String, CommandCallback)
+
+rospy.spin()
+print('Shutting down: stopping motors')
+rr.stop()
+rr.cleanup()
